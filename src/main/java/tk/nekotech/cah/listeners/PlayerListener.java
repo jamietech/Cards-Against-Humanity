@@ -31,9 +31,13 @@ public class PlayerListener extends MasterListener {
                 if (answer == 0 || answer > 10) {
                     this.bot.sendNotice(event.getUser(), "Use a number that you actually have!");
                 } else {
-                    final WhiteCard card = player.getCards().get(answer--);
-                    this.bot.sendNotice(event.getUser(), "Saved answer " + card.getFull() + "!");
-                    player.playCard(card);
+                    if (player.hasPlayedCards()) {
+                        this.bot.sendNotice(event.getUser(), "You've already played a card this round!");
+                    } else {
+                        final WhiteCard card = player.getCards().get(answer--);
+                        this.bot.sendNotice(event.getUser(), "Saved answer " + card.getFull() + "!");
+                        player.playCard(card);
+                    }
                 }
             } catch (final NumberFormatException e) {
                 this.bot.sendNotice(event.getUser(), "You can't answer with that! Try use a number instead.");
@@ -52,12 +56,16 @@ public class PlayerListener extends MasterListener {
             } else if (answers[0] == 0 || answers[0] > 10 || answers[1] == 0 || answers[1] > 10) {
                 this.bot.sendNotice(event.getUser(), "Use a number that you actually have!");
             } else {
-                final WhiteCard[] cards = new WhiteCard[2];
-                for (int i = 0; i < 2; i++) {
-                    cards[i - 1] = player.getCards().get(i - 1);
+                if (player.hasPlayedCards()) {
+                    this.bot.sendNotice(event.getUser(), "You've already played your cards this round!");
+                } else {
+                    final WhiteCard[] cards = new WhiteCard[2];
+                    for (int i = 0; i < 2; i++) {
+                        cards[i - 1] = player.getCards().get(i - 1);
+                    }
+                    this.bot.sendNotice(event.getUser(), "Saved answers " + cards[0].getFull() + ", " + cards[1].getFull() + "!");
+                    player.playCards(cards);
                 }
-                this.bot.sendNotice(event.getUser(), "Saved answers " + cards[0].getFull() + ", " + cards[1].getFull() + "!");
-                player.playCards(cards);
             }
         } else {
             final boolean one = CardsAgainstHumanity.blackCard.getAnswers() == 1;
