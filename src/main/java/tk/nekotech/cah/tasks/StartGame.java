@@ -31,7 +31,7 @@ public class StartGame extends TimerTask {
                 int playing = 0;
                 for (final Player player : CardsAgainstHumanity.players) {
                     playing++;
-                    if (!player.hasPlayedCards() && !player.isCzar()) {
+                    if (!player.hasPlayedCards() && !player.isCzar() && !player.isWaiting()) {
                         sb.append(player.getName() + ", ");
                         waiting++;
                     }

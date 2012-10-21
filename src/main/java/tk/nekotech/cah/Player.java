@@ -76,6 +76,15 @@ public class Player {
 
     public void newRound() {
         this.playedCards = null;
+        if (this.whiteCards.size() > 10) {
+            Collections.shuffle(CardsAgainstHumanity.whiteCards);
+            System.out.println("Replenishing " + (10 - this.whiteCards.size()) + " cards for " + this.getName() + ".");
+            for (int i = 0; i < (10 - this.whiteCards.size()); i++) {
+                final WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(i);
+                this.whiteCards.add(whiteCard);
+                CardsAgainstHumanity.whiteCards.remove(whiteCard);
+            }
+        }
     }
 
     public boolean playCard(final WhiteCard card) {
@@ -83,10 +92,6 @@ public class Player {
             return false;
         }
         this.whiteCards.remove(card);
-        Collections.shuffle(CardsAgainstHumanity.whiteCards);
-        final WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
-        this.whiteCards.add(whiteCard);
-        CardsAgainstHumanity.whiteCards.remove(whiteCard);
         this.playedCards = new WhiteCard[] { card };
         return true;
     }

@@ -25,7 +25,7 @@ public class PlayerListener extends MasterListener {
         }
         final String[] message = event.getMessage().split(" ");
         if (player.isCzar()) {
-            if (CardsAgainstHumanity.gameStatus == GameStatus.IN_SESSION) {
+            if (CardsAgainstHumanity.gameStatus == GameStatus.IN_SESSION && message.length == 1) {
                 bot.sendNotice(event.getUser(), "You're the czar; please wait until it's time for voting.");
             } else {
                 if (message.length == 1) {
@@ -35,29 +35,36 @@ public class PlayerListener extends MasterListener {
                     } catch (NumberFormatException e) {
                         this.bot.sendNotice(event.getUser(), "Uh-oh! I couldn't find that answer. Try a number instead.");
                     }
-                    if (chosen > (CardsAgainstHumanity.players.size() - 1)) {
+                    if (chosen > CardsAgainstHumanity.playerIter.size()) {
                         this.bot.sendNotice(event.getUser(), "I couldn't find that answer.");
                     } else {
                         chosen = chosen - 1;
-                        Player win = CardsAgainstHumanity.players.get(chosen);
+                        Player win = CardsAgainstHumanity.playerIter.get(chosen);
                         StringBuilder send = new StringBuilder();
                         send.append(win.getName() + " wins this round; card was ");
                         if (CardsAgainstHumanity.blackCard.getAnswers() == 1) {
                             send.append(CardsAgainstHumanity.blackCard.getColored().replace("_", win.getPlayedCards()[0].getColored()));
                         } else {
-                            send.append(CardsAgainstHumanity.blackCard.getColored().replaceFirst("_", win.getPlayedCards()[0].getColored()).replaceFirst("_", win.getPlayedCards()[1].getFull()));
+                            send.append(CardsAgainstHumanity.blackCard.getColored().replaceFirst("_", win.getPlayedCards()[0].getColored()).replaceFirst("_", win.getPlayedCards()[1].getColored()));
                         }
                         this.bot.sendMessage("#CAH", send.toString());
                         win.addPoint();
                         CardsAgainstHumanity.nextRound();
                     }
                 } else {
-                    this.bot.sendNotice(event.getUser(), "Try sending 1 number to pick the winner.");
+                    //this.bot.sendNotice(event.getUser(), "Try sending 1 number to pick the winner.");
+                    // Allow conversation.
                 }
             }
             return;
         }
+        if (CardsAgainstHumanity.gameStatus == GameStatus.CZAR_TURN) {
+            return;
+        }
         if (message.length == 1 && CardsAgainstHumanity.blackCard.getAnswers() == 1) {
+            if (player.isWaiting()) {
+                this.bot.sendNotice(event.getUser(), "You're currently waiting for the next round. Hold tight!");
+            }
             int answer = 0;
             try {
                 answer = Integer.parseInt(message[0]);
@@ -78,6 +85,9 @@ public class PlayerListener extends MasterListener {
                 this.bot.sendNotice(event.getUser(), "You can't answer with that! Try use a number instead.");
             }
         } else if (message.length == 2 && CardsAgainstHumanity.blackCard.getAnswers() == 2) {
+            if (player.isWaiting()) {
+                this.bot.sendNotice(event.getUser(), "You're currently waiting for the next round. Hold tight!");
+            }
             final int[] answers = new int[2];
             for (int i = 0; i < 2; i++) {
                 try {
@@ -105,8 +115,9 @@ public class PlayerListener extends MasterListener {
                 }
             }
         } else {
-            final boolean one = CardsAgainstHumanity.blackCard.getAnswers() == 1;
-            this.bot.sendNotice(event.getUser(), "You answered incorrectly! Enter the " + (one ? "number" : "numbers") + " in relation to the " + (one ? "card" : "cards") + " you wish to play.");
+            /*final boolean one = CardsAgainstHumanity.blackCard.getAnswers() == 1;
+            this.bot.sendNotice(event.getUser(), "You answered incorrectly! Enter the " + (one ? "number" : "numbers") + " in relation to the " + (one ? "card" : "cards") + " you wish to play.");*/
+            // Allow conversation.
         }
     }
 

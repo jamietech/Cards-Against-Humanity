@@ -13,7 +13,11 @@ public class CardBot extends MasterBot {
     public CardBot(final String nick) throws NickAlreadyInUseException, IOException, IrcException {
         super(nick);
         new PlayerListener(this);
-        CardsAgainstHumanity.ready();
+        try {
+            CardsAgainstHumanity.ready();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void messageAllCards() {

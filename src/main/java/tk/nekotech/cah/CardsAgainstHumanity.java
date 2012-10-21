@@ -28,6 +28,7 @@ public class CardsAgainstHumanity extends PircBotX {
     private static Timer connect;
     public static GameStatus gameStatus;
     public static ArrayList<Player> players;
+    public static ArrayList<Player> playerIter;
     public static List<WhiteCard> whiteCards;
     public static ArrayList<BlackCard> blackCards;
     public static Player czar;
@@ -151,7 +152,7 @@ public class CardsAgainstHumanity extends PircBotX {
         Collections.shuffle(CardsAgainstHumanity.blackCards);
         final BlackCard card = CardsAgainstHumanity.blackCards.get(0);
         CardsAgainstHumanity.blackCard = card;
-        CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying it's number") + "]");
+        CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying its number") + "]");
         CardsAgainstHumanity.cardBot.messageAllCards();
         CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "You don't have cards because you're the czar! Once everyone has played their cards you will be prompted to choose the best.");
     }
@@ -162,8 +163,14 @@ public class CardsAgainstHumanity extends PircBotX {
             CardsAgainstHumanity.cardBot.sendMessage("#CAH", CardsAgainstHumanity.blackCard.getColored());
             CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "Say the number of the card you wish to win.");
             Collections.shuffle(CardsAgainstHumanity.players);
-            ArrayList<Player> playerIter = new ArrayList<Player>(CardsAgainstHumanity.players);
+            playerIter = new ArrayList<Player>(CardsAgainstHumanity.players);
             playerIter.remove(CardsAgainstHumanity.czar);
+            for (int i = 0; i < playerIter.size(); i++) {
+                Player player = playerIter.get(i);
+                if (player.isWaiting()) {
+                    playerIter.remove(player);
+                }
+            }
             for (int i = 0; i < playerIter.size(); i++) {
                 Player player = playerIter.get(i);
                 if (CardsAgainstHumanity.blackCard.getAnswers() == 1) {
