@@ -109,10 +109,10 @@ public class CardsAgainstHumanity extends PircBotX {
         for (final Player player : CardsAgainstHumanity.players) {
             player.drawCardsForStart();
         }
-        CardsAgainstHumanity.cardBot.messageAllCards();
         Collections.shuffle(CardsAgainstHumanity.blackCards);
         final BlackCard card = CardsAgainstHumanity.blackCards.get(0);
         CardsAgainstHumanity.blackCard = card;
         CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying it's number") + "]");
+        CardsAgainstHumanity.cardBot.messageAllCards();
     }
 }
