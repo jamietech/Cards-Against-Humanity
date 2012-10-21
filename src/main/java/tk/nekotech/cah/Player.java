@@ -4,108 +4,106 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import tk.nekotech.cah.card.WhiteCard;
 
 public class Player {
     private String name;
-    private ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
+    private final ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private int awesomePoints = 0;
     private WhiteCard[] playedCards = null;
 
-    public Player(String name) {
+    public Player(final String name) {
         this.name = name;
     }
 
     public void addPoint() {
-        awesomePoints++;
+        this.awesomePoints++;
     }
 
-    public String getName() {
-        return name;
-    }
-    
-    public int getScore() {
-        return awesomePoints;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    
     public void drawCardsForStart() {
-    	Collections.shuffle(CardsAgainstHumanity.whiteCards);
-    	int i = 0;
-    	List<WhiteCard> newCards = new ArrayList<WhiteCard>(CardsAgainstHumanity.whiteCards);
-    	for (WhiteCard card : CardsAgainstHumanity.whiteCards) {
-    		if (i < 10) {
-    			whiteCards.add(card);
-        		newCards.remove(card);
-        		i++;
-    		}
-    	}
-    	CardsAgainstHumanity.whiteCards = newCards;
-    }
-    
-    public boolean playCard(WhiteCard card) {
-    	if (!whiteCards.contains(card)) {
-    		return false;
-    	}
-    	whiteCards.remove(card);
-    	Collections.shuffle(CardsAgainstHumanity.whiteCards);
-    	WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
-    	whiteCards.add(whiteCard);
-    	CardsAgainstHumanity.whiteCards.remove(whiteCard);
-    	return true;
-    }
-    
-    public boolean playCards(WhiteCard[] cards) {
-    	for (WhiteCard card : cards) {
-    		if (!whiteCards.contains(card)) {
-    			return false;
-    		}
-    	}
-    	whiteCards.removeAll(Arrays.asList(cards));
-    	CardsAgainstHumanity.whiteCards.addAll(Arrays.asList(cards));
-    	playedCards = cards;
-    	return true;
-    }
-    
-    public ArrayList<WhiteCard> getCards() {
-    	return whiteCards;
-    }
-    
-    public WhiteCard[] getPlayedCards() {
-    	return playedCards;
-    }
-    
-    public boolean hasPlayedCards() {
-    	return playedCards != null;
-    }
-    
-    public void newRound() {
-    	playedCards = null;
+        Collections.shuffle(CardsAgainstHumanity.whiteCards);
+        int i = 0;
+        final List<WhiteCard> newCards = new ArrayList<WhiteCard>(CardsAgainstHumanity.whiteCards);
+        for (final WhiteCard card : CardsAgainstHumanity.whiteCards) {
+            if (i < 10) {
+                this.whiteCards.add(card);
+                newCards.remove(card);
+                i++;
+            }
+        }
+        CardsAgainstHumanity.whiteCards = newCards;
     }
 
     @Override
-    public String toString() {
-        return "Player{" + "name=" + getName() + '}';
-    }
-    
-    @Override
-    public boolean equals(Object object) {
-        if(object instanceof Player) {
+    public boolean equals(final Object object) {
+        if (object instanceof Player) {
             return ((Player) object).name.equalsIgnoreCase(this.name);
         }
-        if(object instanceof String) {
+        if (object instanceof String) {
             return ((String) object).equalsIgnoreCase(this.name);
         }
         return false;
     }
-    
-    @Override
-    public int hashCode() {
-        return name.toLowerCase().hashCode();
+
+    public ArrayList<WhiteCard> getCards() {
+        return this.whiteCards;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public WhiteCard[] getPlayedCards() {
+        return this.playedCards;
+    }
+
+    public int getScore() {
+        return this.awesomePoints;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.toLowerCase().hashCode();
+    }
+
+    public boolean hasPlayedCards() {
+        return this.playedCards != null;
+    }
+
+    public void newRound() {
+        this.playedCards = null;
+    }
+
+    public boolean playCard(final WhiteCard card) {
+        if (!this.whiteCards.contains(card)) {
+            return false;
+        }
+        this.whiteCards.remove(card);
+        Collections.shuffle(CardsAgainstHumanity.whiteCards);
+        final WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
+        this.whiteCards.add(whiteCard);
+        CardsAgainstHumanity.whiteCards.remove(whiteCard);
+        return true;
+    }
+
+    public boolean playCards(final WhiteCard[] cards) {
+        for (final WhiteCard card : cards) {
+            if (!this.whiteCards.contains(card)) {
+                return false;
+            }
+        }
+        this.whiteCards.removeAll(Arrays.asList(cards));
+        CardsAgainstHumanity.whiteCards.addAll(Arrays.asList(cards));
+        this.playedCards = cards;
+        return true;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" + "name=" + this.getName() + '}';
+    }
 }
