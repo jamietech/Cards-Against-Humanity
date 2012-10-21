@@ -11,9 +11,13 @@ public class Player {
     private final ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private int awesomePoints = 0;
     private WhiteCard[] playedCards = null;
+    private boolean czar;
+    private boolean isWaiting;
 
     public Player(final String name) {
         this.name = name;
+        this.setWaiting(false);
+        this.setCzar(false);
     }
 
     public void addPoint() {
@@ -83,6 +87,7 @@ public class Player {
         final WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
         this.whiteCards.add(whiteCard);
         CardsAgainstHumanity.whiteCards.remove(whiteCard);
+        this.playedCards = new WhiteCard[] { card };
         return true;
     }
 
@@ -100,6 +105,22 @@ public class Player {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public boolean isCzar() {
+        return this.czar;
+    }
+
+    public void setCzar(boolean czar) {
+        this.czar = czar;
+    }
+
+    public boolean isWaiting() {
+        return this.isWaiting;
+    }
+
+    public void setWaiting(boolean waiting) {
+        this.isWaiting = waiting;
     }
 
     @Override

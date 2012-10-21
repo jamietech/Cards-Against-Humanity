@@ -17,7 +17,7 @@ public class StartGame extends TimerTask {
 
     @Override
     public void run() {
-        if (CardsAgainstHumanity.gameStatus != GameStatus.BOT_START && CardsAgainstHumanity.gameStatus != GameStatus.IN_SESSION) {
+        if (CardsAgainstHumanity.gameStatus != GameStatus.BOT_START && !CardsAgainstHumanity.inSession()) {
             if (CardsAgainstHumanity.players.size() >= 3) {
                 CardsAgainstHumanity.startGame();
             } else {
@@ -31,13 +31,13 @@ public class StartGame extends TimerTask {
                 int playing = 0;
                 for (final Player player : CardsAgainstHumanity.players) {
                     playing++;
-                    if (!player.hasPlayedCards()) {
+                    if (!player.hasPlayedCards() && !player.isCzar()) {
                         sb.append(player.getName() + ", ");
                         waiting++;
                     }
                 }
-                if (waiting == playing) {
-                } else if (sb.length() != 0 && this.run == 1) {
+                if ((waiting - 1) == playing) {
+                } else if (sb.length() != 0 && this.run == 4) {
                     sb.delete(sb.length() - 2, sb.length());
                     this.bot.sendMessage("#CAH", Colors.BOLD + "Still waiting on cards from: " + Colors.NORMAL + sb.toString());
                     this.run = 0;

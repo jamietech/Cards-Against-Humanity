@@ -28,7 +28,11 @@ public class MessageListener extends MasterListener {
                 this.bot.sendNotice(user, "You're already playing the game!");
             } else {
                 this.bot.sendNotice(user, "Welcome to " + Colors.BOLD + "Cards Against Humanity" + Colors.NORMAL + "! Your cards will be assigned next round.");
-                CardsAgainstHumanity.players.add(new Player(user.getNick()));
+                Player player = new Player(user.getNick());
+                if (CardsAgainstHumanity.inSession()) {
+                    player.setWaiting(true);
+                }
+                CardsAgainstHumanity.players.add(player);
             }
         }
         if (quick.equals("quit")) {
@@ -42,6 +46,7 @@ public class MessageListener extends MasterListener {
             }
             if (playing) {
                 this.bot.sendNotice(user, "Good-bye! Your cards for this round have been dropped. You had " + playa.getScore() + " points!");
+                CardsAgainstHumanity.players.remove(playa);
             } else {
                 this.bot.sendNotice(user, "You're not currently playing the game!");
             }

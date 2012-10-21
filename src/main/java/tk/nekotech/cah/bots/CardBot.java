@@ -18,13 +18,15 @@ public class CardBot extends MasterBot {
 
     public void messageAllCards() {
         for (final Player player : CardsAgainstHumanity.players) {
+            if (CardsAgainstHumanity.czar == player)
+                continue;
             final StringBuilder sb = new StringBuilder();
             int i = 1;
             for (final WhiteCard card : player.getCards()) {
                 sb.append(i + " [" + Colors.BOLD + card.getColored() + "] ");
                 i++;
             }
-            this.sendNotice(player.getName(), "Your cards: " + sb.toString());
+            this.sendNotice(player.getName(), player.getName() + ": your cards are " + sb.toString());
         }
     }
 }

@@ -16,7 +16,7 @@ public class PlayerListener extends MasterListener {
     @Override
     @SuppressWarnings("rawtypes")
     public void onMessage(final MessageEvent event) {
-        if (event.getUser().getNick().contains("CAH-Master") || CardsAgainstHumanity.gameStatus != GameStatus.IN_SESSION) {
+        if (event.getUser().getNick().contains("CAH-Master") || !CardsAgainstHumanity.inSession() || event.getMessage().equalsIgnoreCase("join") || event.getMessage().equalsIgnoreCase("quit")) {
             return;
         }
         final Player player = CardsAgainstHumanity.getPlayer(event.getUser().getNick());
@@ -24,19 +24,54 @@ public class PlayerListener extends MasterListener {
             return;
         }
         final String[] message = event.getMessage().split(" ");
+        if (player.isCzar()) {
+            if (CardsAgainstHumanity.gameStatus == GameStatus.IN_SESSION) {
+                bot.sendNotice(event.getUser(), "You're the czar; please wait until it's time for voting.");
+            } else {
+                if (message.length == 1) {
+                    int chosen = 0;
+                    try {
+                        chosen = Integer.parseInt(message[0]);
+                    } catch (NumberFormatException e) {
+                        this.bot.sendNotice(event.getUser(), "Uh-oh! I couldn't find that answer. Try a number instead.");
+                    }
+                    if (chosen > (CardsAgainstHumanity.players.size() - 1)) {
+                        this.bot.sendNotice(event.getUser(), "I couldn't find that answer.");
+                    } else {
+                        chosen = chosen - 1;
+                        Player win = CardsAgainstHumanity.players.get(chosen);
+                        StringBuilder send = new StringBuilder();
+                        send.append(win.getName() + " wins this round; card was ");
+                        if (CardsAgainstHumanity.blackCard.getAnswers() == 1) {
+                            send.append(CardsAgainstHumanity.blackCard.getColored().replace("_", win.getPlayedCards()[0].getColored()));
+                        } else {
+                            send.append(CardsAgainstHumanity.blackCard.getColored().replaceFirst("_", win.getPlayedCards()[0].getColored()).replaceFirst("_", win.getPlayedCards()[1].getFull()));
+                        }
+                        this.bot.sendMessage("#CAH", send.toString());
+                        win.addPoint();
+                        CardsAgainstHumanity.nextRound();
+                    }
+                } else {
+                    this.bot.sendNotice(event.getUser(), "Try sending 1 number to pick the winner.");
+                }
+            }
+            return;
+        }
         if (message.length == 1 && CardsAgainstHumanity.blackCard.getAnswers() == 1) {
             int answer = 0;
             try {
                 answer = Integer.parseInt(message[0]);
-                if (answer == 0 || answer > 10) {
+                if (answer < 1 || answer > 10) {
                     this.bot.sendNotice(event.getUser(), "Use a number that you actually have!");
                 } else {
                     if (player.hasPlayedCards()) {
                         this.bot.sendNotice(event.getUser(), "You've already played a card this round!");
                     } else {
-                        final WhiteCard card = player.getCards().get(answer--);
+                        answer = answer - 1;
+                        final WhiteCard card = player.getCards().get(answer);
                         this.bot.sendNotice(event.getUser(), "Saved answer " + card.getFull() + "!");
                         player.playCard(card);
+                        CardsAgainstHumanity.checkNext();
                     }
                 }
             } catch (final NumberFormatException e) {
@@ -46,14 +81,14 @@ public class PlayerListener extends MasterListener {
             final int[] answers = new int[2];
             for (int i = 0; i < 2; i++) {
                 try {
-                    answers[i - 1] = Integer.parseInt(message[i - 1]);
+                    answers[i] = Integer.parseInt(message[i]);
                 } catch (final NumberFormatException e) {
-                    answers[i - 1] = -55;
+                    answers[i] = -55;
                 }
             }
             if (answers[0] == -55 || answers[1] == -55) {
                 this.bot.sendNotice(event.getUser(), "You can't answer with that! Ensure you entered two numbers.");
-            } else if (answers[0] == 0 || answers[0] > 10 || answers[1] == 0 || answers[1] > 10) {
+            } else if (answers[0] < 1 || answers[0] > 10 || answers[1] < 1 || answers[1] > 10) {
                 this.bot.sendNotice(event.getUser(), "Use a number that you actually have!");
             } else {
                 if (player.hasPlayedCards()) {
@@ -61,10 +96,12 @@ public class PlayerListener extends MasterListener {
                 } else {
                     final WhiteCard[] cards = new WhiteCard[2];
                     for (int i = 0; i < 2; i++) {
-                        cards[i - 1] = player.getCards().get(i - 1);
+                        answers[i] = answers[i] - 1;
+                        cards[i] = player.getCards().get(answers[i]);
                     }
                     this.bot.sendNotice(event.getUser(), "Saved answers " + cards[0].getFull() + ", " + cards[1].getFull() + "!");
                     player.playCards(cards);
+                    CardsAgainstHumanity.checkNext();
                 }
             }
         } else {
