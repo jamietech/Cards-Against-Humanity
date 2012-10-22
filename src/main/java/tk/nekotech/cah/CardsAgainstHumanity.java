@@ -145,7 +145,8 @@ public class CardsAgainstHumanity extends PircBotX {
         }
         sb.delete(sb.length() - 2, sb.length());
         final String win = (sb.toString().contains(", ") ? "Winner" : "Winners") + ": " + sb.toString();
-        this.cardBot.setTopic(this.cardBot.getChannel("#CAH"), this.topic + " | " + win);
+        if (winning > 0)
+            this.cardBot.setTopic(this.cardBot.getChannel("#CAH"), this.topic + " | " + win);
         this.czar.setCzar(false);
         Collections.shuffle(this.players);
         this.czar = this.players.get(0);
