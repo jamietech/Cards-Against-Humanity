@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Timer;
 import org.pircbotx.Channel;
 import org.pircbotx.Colors;
-import org.pircbotx.PircBotX;
 import tk.nekotech.cah.bots.CardBot;
 import tk.nekotech.cah.bots.SpamBot;
 import tk.nekotech.cah.card.BlackCard;
@@ -23,7 +22,7 @@ import tk.nekotech.cah.tasks.MasterConnect;
 import tk.nekotech.cah.tasks.Nag;
 import tk.nekotech.cah.tasks.StartGame;
 
-public class CardsAgainstHumanity extends PircBotX {
+public class CardsAgainstHumanity {
     public static void main(final String[] args) {
         System.out.println("Starting...");
         new CardsAgainstHumanity();
@@ -174,6 +173,10 @@ public class CardsAgainstHumanity extends PircBotX {
         final BlackCard card = this.blackCards.get(0);
         this.blackCard = card;
         this.spamBot.sendMessage("#CAH", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying its number") + "]");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
         this.cardBot.messageAllCards();
         this.cardBot.sendNotice(this.czar.getName(), "You don't have cards because you're the czar! Once everyone has played their cards you will be prompted to choose the best.");
         this.nagger.schedule(new Nag(this), 60000, 60000);
@@ -282,12 +285,12 @@ public class CardsAgainstHumanity extends PircBotX {
             mode += "v";
             sb.append(user + " ");
             if (("MODE #CAH :" + mode + " " + sb.toString()).length() >= 482) {
-                this.setMode(chan, mode + " " + sb.toString());
+                this.spamBot.setMode(chan, mode + " " + sb.toString());
                 mode = "+";
                 sb = new StringBuilder();
             }
         }
-        this.setMode(chan, mode + " " + sb.toString());
+        this.spamBot.setMode(chan, mode + " " + sb.toString());
     }
 
     public void deVoiceUsers(String... users) {
@@ -301,11 +304,11 @@ public class CardsAgainstHumanity extends PircBotX {
             mode += "v";
             sb.append(user + " ");
             if (("MODE #CAH :" + mode + " " + sb.toString()).length() >= 482) {
-                this.setMode(chan, mode + " " + sb.toString());
+                this.spamBot.setMode(chan, mode + " " + sb.toString());
                 mode = "-";
                 sb = new StringBuilder();
             }
         }
-        this.setMode(chan, mode + " " + sb.toString());
+        this.spamBot.setMode(chan, mode + " " + sb.toString());
     }
 }
