@@ -28,6 +28,10 @@ public class PlayerListener extends MasterListener {
             return;
         }
         final String[] message = event.getMessage().split(" ");
+        if (message.length == 1 && message[0].equalsIgnoreCase("info")) {
+            this.bot.sendNotice(event.getUser(), "You currently have " + player.getScore() + " awesome points. The black card is: " + this.cah.blackCard.getColored());
+            this.bot.sendNotice(event.getUser(), "Your cards are: " + this.cah.getCards(player));
+        }
         if (player.isCzar()) {
             if (this.cah.gameStatus == GameStatus.IN_SESSION && message.length == 1) {
                 this.bot.sendNotice(event.getUser(), "You're the czar; please wait until it's time for voting.");
@@ -139,9 +143,6 @@ public class PlayerListener extends MasterListener {
             } catch (final NumberFormatException e) {
                 this.bot.sendNotice(event.getUser(), "You need to specify an amount of cards to drop.");
             }
-        } else if (message.length == 1 && message[0].equalsIgnoreCase("info")) {
-            this.bot.sendNotice(event.getUser(), "You currently have " + player.getScore() + " awesome points. The black card is: " + this.cah.blackCard.getColored());
-            this.bot.sendNotice(event.getUser(), "Your cards are: " + this.cah.getCards(player));
         }
     }
 
