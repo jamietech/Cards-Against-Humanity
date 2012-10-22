@@ -229,6 +229,12 @@ public class CardsAgainstHumanity extends PircBotX {
     public void startGame() {
         this.gameStatus = GameStatus.IN_SESSION;
         for (final Player player : this.players) {
+            if (player.getCards().size() > 0) {
+                for (int i = 0; i < player.getCards().size(); i++) {
+                    this.whiteCards.add(player.getCards().get(0));
+                    player.getCards().remove(0);
+                }
+            }
             player.drawCardsForStart();
         }
         this.czar = this.players.get(0);
