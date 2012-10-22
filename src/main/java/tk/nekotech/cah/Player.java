@@ -11,6 +11,7 @@ public class Player {
     private final CardsAgainstHumanity cah;
     private final ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private int awesomePoints = 0;
+    private int changedCards = 0;
     private WhiteCard[] playedCards = null;
     private boolean czar;
     private boolean isWaiting;
@@ -24,6 +25,10 @@ public class Player {
 
     public void addPoint() {
         this.awesomePoints++;
+    }
+
+    public void addChanged() {
+        this.changedCards++;
     }
 
     public void drawCardsForStart() {
@@ -67,6 +72,10 @@ public class Player {
         return this.awesomePoints;
     }
 
+    public int getChanged() {
+        return this.changedCards;
+    }
+
     @Override
     public int hashCode() {
         return this.name.toLowerCase().hashCode();
@@ -86,6 +95,7 @@ public class Player {
 
     public void newRound() {
         this.playedCards = null;
+        this.changedCards = 0;
     }
 
     public boolean playCard(final WhiteCard card) {

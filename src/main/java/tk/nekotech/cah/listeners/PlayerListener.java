@@ -1,5 +1,6 @@
 package tk.nekotech.cah.listeners;
 
+import java.util.Collections;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.NickChangeEvent;
@@ -54,9 +55,6 @@ public class PlayerListener extends MasterListener {
                         win.addPoint();
                         this.cah.nextRound();
                     }
-                } else {
-                    //this.bot.sendNotice(event.getUser(), "Try sending 1 number to pick the winner.");
-                    // Allow conversation.
                 }
             }
             return;
@@ -117,10 +115,30 @@ public class PlayerListener extends MasterListener {
                     this.cah.checkNext();
                 }
             }
-        } else {
-            /*final boolean one = this.cah.blackCard.getAnswers() == 1;
-            this.bot.sendNotice(event.getUser(), "You answered incorrectly! Enter the " + (one ? "number" : "numbers") + " in relation to the " + (one ? "card" : "cards") + " you wish to play.");*/
-            // Allow conversation.
+        } else if (message.length == 2 && message[0].equals("drop")) {
+            int card = 0;
+            try {
+                card = Integer.parseInt(message[1]);
+                if (player.getScore() > 1) {
+                    this.bot.sendNotice(event.getUser(), "You don't have enough awesome points to do that.");
+                } else if (card > 10 || card < 1) {
+                    this.bot.sendNotice(event.getUser(), "You don't have that card! Pick a card between 1-10.");
+                } else if (player.getChanged() == 10) {
+                    this.bot.sendNotice(event.getUser(), "You've already changed your full deck this round. Wait until next round before changing again.");
+                } else {
+                    card = card - 1;
+                    WhiteCard old = player.getCards().get(card);
+                    player.getCards().remove(old);
+                    Collections.shuffle(this.cah.whiteCards);
+                    WhiteCard newc = this.cah.whiteCards.get(0);
+                    player.getCards().add(newc);
+                    this.cah.whiteCards.remove(newc);
+                    this.cah.whiteCards.add(old);
+                    this.bot.sendNotice(event.getUser(), "You dropped card [" + old.getColored() + "] and picked up [" + newc.getColored() + "]; you now have " + player.getScore() + " awesome points.");
+                }
+            } catch (NumberFormatException e) {
+                this.bot.sendNotice(event.getUser(), "You need to specify an amount of cards to drop.");
+            }
         }
     }
 
