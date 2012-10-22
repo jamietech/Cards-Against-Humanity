@@ -261,6 +261,7 @@ public class CardsAgainstHumanity extends PircBotX {
                 }
             }
             player.drawCardsForStart();
+            this.cardBot.voice(this.cardBot.getChannel("#CAH"), this.cardBot.getUser(player.getName()));
         }
         this.czar = this.players.get(0);
         this.nextRound();
