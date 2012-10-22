@@ -217,6 +217,7 @@ public class CardsAgainstHumanity {
                 this.nextRound();
             }
         }
+        this.checkNext();
     }
 
     public void ready() {
