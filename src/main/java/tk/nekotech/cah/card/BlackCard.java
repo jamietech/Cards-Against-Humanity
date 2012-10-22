@@ -21,8 +21,8 @@ public class BlackCard {
     }
 
     public String getColored() {
-        String ret = color;
-        ret += this.getFull().replace("_", "_" + color);
+        String ret = this.color;
+        ret += this.getFull().replace("_", "_" + this.color);
         ret += Colors.NORMAL;
         return ret;
     }

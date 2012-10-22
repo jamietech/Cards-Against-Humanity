@@ -74,17 +74,16 @@ public class Player {
         return this.playedCards != null;
     }
 
+    public boolean isCzar() {
+        return this.czar;
+    }
+
+    public boolean isWaiting() {
+        return this.isWaiting;
+    }
+
     public void newRound() {
         this.playedCards = null;
-        if (this.whiteCards.size() > 10) {
-            Collections.shuffle(CardsAgainstHumanity.whiteCards);
-            System.out.println("Replenishing " + (10 - this.whiteCards.size()) + " cards for " + this.getName() + ".");
-            for (int i = 0; i < (10 - this.whiteCards.size()); i++) {
-                final WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(i);
-                this.whiteCards.add(whiteCard);
-                CardsAgainstHumanity.whiteCards.remove(whiteCard);
-            }
-        }
     }
 
     public boolean playCard(final WhiteCard card) {
@@ -93,6 +92,10 @@ public class Player {
         }
         this.whiteCards.remove(card);
         this.playedCards = new WhiteCard[] { card };
+        Collections.shuffle(CardsAgainstHumanity.whiteCards);
+        final WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
+        this.whiteCards.add(whiteCard);
+        CardsAgainstHumanity.whiteCards.remove(whiteCard);
         return true;
     }
 
@@ -105,26 +108,25 @@ public class Player {
         this.whiteCards.removeAll(Arrays.asList(cards));
         CardsAgainstHumanity.whiteCards.addAll(Arrays.asList(cards));
         this.playedCards = cards;
+        Collections.shuffle(CardsAgainstHumanity.whiteCards);
+        WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
+        this.whiteCards.add(whiteCard);
+        CardsAgainstHumanity.whiteCards.remove(whiteCard);
+        whiteCard = CardsAgainstHumanity.whiteCards.get(0);
+        this.whiteCards.add(whiteCard);
+        CardsAgainstHumanity.whiteCards.remove(whiteCard);
         return true;
+    }
+
+    public void setCzar(final boolean czar) {
+        this.czar = czar;
     }
 
     public void setName(final String name) {
         this.name = name;
     }
 
-    public boolean isCzar() {
-        return this.czar;
-    }
-
-    public void setCzar(boolean czar) {
-        this.czar = czar;
-    }
-
-    public boolean isWaiting() {
-        return this.isWaiting;
-    }
-
-    public void setWaiting(boolean waiting) {
+    public void setWaiting(final boolean waiting) {
         this.isWaiting = waiting;
     }
 

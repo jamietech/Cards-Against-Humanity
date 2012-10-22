@@ -26,28 +26,28 @@ public class PlayerListener extends MasterListener {
         final String[] message = event.getMessage().split(" ");
         if (player.isCzar()) {
             if (CardsAgainstHumanity.gameStatus == GameStatus.IN_SESSION && message.length == 1) {
-                bot.sendNotice(event.getUser(), "You're the czar; please wait until it's time for voting.");
+                this.bot.sendNotice(event.getUser(), "You're the czar; please wait until it's time for voting.");
             } else {
                 if (message.length == 1) {
                     int chosen = 0;
                     try {
                         chosen = Integer.parseInt(message[0]);
-                    } catch (NumberFormatException e) {
+                    } catch (final NumberFormatException e) {
                         this.bot.sendNotice(event.getUser(), "Uh-oh! I couldn't find that answer. Try a number instead.");
                     }
                     if (chosen > CardsAgainstHumanity.playerIter.size()) {
                         this.bot.sendNotice(event.getUser(), "I couldn't find that answer.");
                     } else {
                         chosen = chosen - 1;
-                        Player win = CardsAgainstHumanity.playerIter.get(chosen);
-                        StringBuilder send = new StringBuilder();
+                        final Player win = CardsAgainstHumanity.playerIter.get(chosen);
+                        final StringBuilder send = new StringBuilder();
                         send.append(win.getName() + " wins this round; card was ");
                         if (CardsAgainstHumanity.blackCard.getAnswers() == 1) {
                             send.append(CardsAgainstHumanity.blackCard.getColored().replace("_", win.getPlayedCards()[0].getColored()));
                         } else {
                             send.append(CardsAgainstHumanity.blackCard.getColored().replaceFirst("_", win.getPlayedCards()[0].getColored()).replaceFirst("_", win.getPlayedCards()[1].getColored()));
                         }
-                        this.bot.sendMessage("#CAH", send.toString());
+                        CardsAgainstHumanity.spamBot.sendMessage("#CAH", send.toString());
                         win.addPoint();
                         CardsAgainstHumanity.nextRound();
                     }

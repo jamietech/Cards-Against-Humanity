@@ -15,15 +15,16 @@ public class CardBot extends MasterBot {
         new PlayerListener(this);
         try {
             CardsAgainstHumanity.ready();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
     public void messageAllCards() {
         for (final Player player : CardsAgainstHumanity.players) {
-            if (CardsAgainstHumanity.czar == player)
+            if (CardsAgainstHumanity.czar == player) {
                 continue;
+            }
             final StringBuilder sb = new StringBuilder();
             int i = 1;
             for (final WhiteCard card : player.getCards()) {

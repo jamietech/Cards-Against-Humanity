@@ -20,12 +20,15 @@ import tk.nekotech.cah.card.WhiteCard;
 import tk.nekotech.cah.runnables.Startup;
 import tk.nekotech.cah.tasks.CardConnect;
 import tk.nekotech.cah.tasks.MasterConnect;
+import tk.nekotech.cah.tasks.Nag;
 import tk.nekotech.cah.tasks.StartGame;
 
 public class CardsAgainstHumanity extends PircBotX {
     public static CardBot cardBot;
     public static SpamBot spamBot;
     private static Timer connect;
+    private static Timer nagger;
+    public static Nag nag;
     public static GameStatus gameStatus;
     public static ArrayList<Player> players;
     public static ArrayList<Player> playerIter;
@@ -34,6 +37,32 @@ public class CardsAgainstHumanity extends PircBotX {
     public static Player czar;
     public static BlackCard blackCard;
     public static String topic = Colors.BOLD + "Cards Against Humanity" + Colors.NORMAL;
+
+    public static void checkNext() {
+        if (CardsAgainstHumanity.proceedToNext()) {
+            CardsAgainstHumanity.cardBot.sendMessage("#CAH", Colors.BOLD + "All players have submitted their cards." + Colors.NORMAL + " Time for " + CardsAgainstHumanity.czar.getName() + " to pick the winning card.");
+            CardsAgainstHumanity.cardBot.sendMessage("#CAH", CardsAgainstHumanity.blackCard.getColored());
+            CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "Say the number of the card you wish to win.");
+            Collections.shuffle(CardsAgainstHumanity.players);
+            CardsAgainstHumanity.playerIter = new ArrayList<Player>(CardsAgainstHumanity.players);
+            CardsAgainstHumanity.playerIter.remove(CardsAgainstHumanity.czar);
+            for (int i = 0; i < CardsAgainstHumanity.playerIter.size(); i++) {
+                final Player player = CardsAgainstHumanity.playerIter.get(i);
+                if (player.isWaiting()) {
+                    CardsAgainstHumanity.playerIter.remove(player);
+                }
+            }
+            for (int i = 0; i < CardsAgainstHumanity.playerIter.size(); i++) {
+                final Player player = CardsAgainstHumanity.playerIter.get(i);
+                if (CardsAgainstHumanity.blackCard.getAnswers() == 1) {
+                    CardsAgainstHumanity.cardBot.sendMessage("#CAH", i + 1 + ": " + player.getPlayedCards()[0].getColored());
+                } else {
+                    CardsAgainstHumanity.cardBot.sendMessage("#CAH", i + 1 + ": " + player.getPlayedCards()[0].getColored() + " | " + player.getPlayedCards()[1].getColored());
+                }
+            }
+            CardsAgainstHumanity.gameStatus = GameStatus.CZAR_TURN;
+        }
+    }
 
     public static Player getPlayer(final String username) {
         for (final Player player : CardsAgainstHumanity.players) {
@@ -67,6 +96,10 @@ public class CardsAgainstHumanity extends PircBotX {
         }
     }
 
+    public static boolean inSession() {
+        return CardsAgainstHumanity.gameStatus == GameStatus.IN_SESSION || CardsAgainstHumanity.gameStatus == GameStatus.CZAR_TURN;
+    }
+
     public static void main(final String[] args) throws Exception {
         System.out.println("Starting...");
         CardsAgainstHumanity.gameStatus = GameStatus.BOT_START;
@@ -74,18 +107,80 @@ public class CardsAgainstHumanity extends PircBotX {
         CardsAgainstHumanity.connect = new Timer();
         CardsAgainstHumanity.connect.schedule(new MasterConnect(), 5000);
         CardsAgainstHumanity.connect.schedule(new CardConnect(), 10000);
-        (new Startup()).start();
+        new Startup().start();
+    }
+
+    public static void nextRound() {
+        CardsAgainstHumanity.nagger.cancel();
+        CardsAgainstHumanity.nagger = new Timer();
+        CardsAgainstHumanity.gameStatus = GameStatus.IN_SESSION;
+        if (CardsAgainstHumanity.players.size() < 3) {
+            CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Uh-oh! There aren't enough players to continue. Say 'quit' to quit, 'join' to join.");
+            CardsAgainstHumanity.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
+            return;
+        }
+        for (final Player player : CardsAgainstHumanity.players) {
+            if (player.isWaiting()) {
+                player.drawCardsForStart();
+                player.setWaiting(false);
+            }
+            player.newRound();
+        }
+        CardsAgainstHumanity.czar.setCzar(false);
+        Collections.shuffle(CardsAgainstHumanity.players);
+        CardsAgainstHumanity.czar = CardsAgainstHumanity.players.get(0);
+        CardsAgainstHumanity.czar.setCzar(true);
+        CardsAgainstHumanity.spamBot.sendMessage("#CAH", "The new czar is " + Colors.BOLD + CardsAgainstHumanity.czar.getName());
+        Collections.shuffle(CardsAgainstHumanity.blackCards);
+        final BlackCard card = CardsAgainstHumanity.blackCards.get(0);
+        CardsAgainstHumanity.blackCard = card;
+        CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying its number") + "]");
+        CardsAgainstHumanity.cardBot.messageAllCards();
+        CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "You don't have cards because you're the czar! Once everyone has played their cards you will be prompted to choose the best.");
+        CardsAgainstHumanity.nagger.schedule(CardsAgainstHumanity.nag, 60000, 60000);
+    }
+
+    public static boolean proceedToNext() {
+        for (final Player player : CardsAgainstHumanity.players) {
+            if (!player.hasPlayedCards() && !player.isCzar() && !player.isWaiting()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void processLeave(final Player player) {
+        if (player.isCzar()) {
+            Collections.shuffle(CardsAgainstHumanity.players);
+            player.setCzar(false);
+            CardsAgainstHumanity.czar = CardsAgainstHumanity.players.get(0);
+            CardsAgainstHumanity.czar.setCzar(true);
+            CardsAgainstHumanity.spamBot.sendMessage("#CAH", "The current czar, " + player.getName() + " quit the game and " + CardsAgainstHumanity.czar.getName() + " is now the new czar for this round.");
+            CardsAgainstHumanity.czar.newRound();
+            if (CardsAgainstHumanity.gameStatus == GameStatus.CZAR_TURN) {
+                if (CardsAgainstHumanity.players.size() - 1 < 3) {
+                    CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Uh-oh! There aren't enough players to continue. Say 'quit' to quit, 'join' to join.");
+                    CardsAgainstHumanity.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
+                    return;
+                }
+                CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "Say the number of the card you wish to win.");
+            }
+        } else if (CardsAgainstHumanity.gameStatus == GameStatus.CZAR_TURN) {
+            CardsAgainstHumanity.cardBot.sendMessage("#CAH", "Uh-oh! " + player.getName() + " quit the game. Let's start a new round.");
+            CardsAgainstHumanity.nextRound();
+        }
     }
 
     public static void ready() {
-        Channel chan = CardsAgainstHumanity.spamBot.getChannel("#CAH");
-        CardsAgainstHumanity.spamBot.setModerated(chan);
-        CardsAgainstHumanity.spamBot.setTopic(chan, topic + " | Say 'join' without quotes to join the game.");
+        final Channel chan = CardsAgainstHumanity.spamBot.getChannel("#CAH");
+        CardsAgainstHumanity.nagger = new Timer();
+        CardsAgainstHumanity.spamBot.setTopic(chan, CardsAgainstHumanity.topic + " | Say 'join' without quotes to join the game. | Report issues at https://github.com/soaringcats/Cards-Against-Humanity/issues");
         CardsAgainstHumanity.spamBot.sendMessage("#CAH", Colors.BOLD + "Welcome to Cards Against Humanity!");
         CardsAgainstHumanity.spamBot.sendMessage("#CAH", "To join the game simply say 'join' in chat (without quotes) and you will be added next round!");
         CardsAgainstHumanity.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
-        CardsAgainstHumanity.connect.scheduleAtFixedRate(new StartGame(CardsAgainstHumanity.spamBot), 15000, 15000);
+        CardsAgainstHumanity.connect.scheduleAtFixedRate(new StartGame(CardsAgainstHumanity.spamBot), 60000, 60000);
         CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Running version " + CardsAgainstHumanity.spamBot.getCAHVersion() + " with " + CardsAgainstHumanity.whiteCards.size() + " white cards and " + CardsAgainstHumanity.blackCards.size() + " black cards.");
+        CardsAgainstHumanity.nag = new Nag();
     }
 
     private static void setupCards() throws IOException {
@@ -118,80 +213,6 @@ public class CardsAgainstHumanity extends PircBotX {
             player.drawCardsForStart();
         }
         CardsAgainstHumanity.czar = CardsAgainstHumanity.players.get(0);
-        nextRound();
-    }
-
-    public static void processLeave(Player player) {
-        if (player.isCzar()) {
-            Collections.shuffle(CardsAgainstHumanity.players);
-            player.setCzar(false);
-            CardsAgainstHumanity.czar = CardsAgainstHumanity.players.get(0);
-            CardsAgainstHumanity.czar.setCzar(true);
-            CardsAgainstHumanity.spamBot.sendMessage("#CAH", "The current czar, " + player.getName() + " quit the game and " + CardsAgainstHumanity.czar.getName() + " is now the new czar for this round.");
-            CardsAgainstHumanity.czar.newRound();
-            if (gameStatus == GameStatus.CZAR_TURN) {
-                CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "Say the number of the card you wish to win.");
-            }
-        }
-    }
-
-    public static void nextRound() {
-        CardsAgainstHumanity.gameStatus = GameStatus.IN_SESSION;
-        for (Player player : CardsAgainstHumanity.players) {
-            if (player.isWaiting()) {
-                player.drawCardsForStart();
-                player.setWaiting(false);
-            }
-            player.newRound();
-        }
-        CardsAgainstHumanity.czar.setCzar(false);
-        Collections.shuffle(CardsAgainstHumanity.players);
-        CardsAgainstHumanity.czar = CardsAgainstHumanity.players.get(0);
-        CardsAgainstHumanity.czar.setCzar(true);
-        CardsAgainstHumanity.cardBot.sendMessage("#CAH", "The new czar is " + Colors.BOLD + CardsAgainstHumanity.czar.getName());
-        Collections.shuffle(CardsAgainstHumanity.blackCards);
-        final BlackCard card = CardsAgainstHumanity.blackCards.get(0);
-        CardsAgainstHumanity.blackCard = card;
-        CardsAgainstHumanity.spamBot.sendMessage("#CAH", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying its number") + "]");
-        CardsAgainstHumanity.cardBot.messageAllCards();
-        CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "You don't have cards because you're the czar! Once everyone has played their cards you will be prompted to choose the best.");
-    }
-
-    public static void checkNext() {
-        if (proceedToNext()) {
-            CardsAgainstHumanity.cardBot.sendMessage("#CAH", Colors.BOLD + "All players have submitted their cards." + Colors.NORMAL + " Time for " + CardsAgainstHumanity.czar.getName() + " to pick the winning card.");
-            CardsAgainstHumanity.cardBot.sendMessage("#CAH", CardsAgainstHumanity.blackCard.getColored());
-            CardsAgainstHumanity.cardBot.sendNotice(CardsAgainstHumanity.czar.getName(), "Say the number of the card you wish to win.");
-            Collections.shuffle(CardsAgainstHumanity.players);
-            playerIter = new ArrayList<Player>(CardsAgainstHumanity.players);
-            playerIter.remove(CardsAgainstHumanity.czar);
-            for (int i = 0; i < playerIter.size(); i++) {
-                Player player = playerIter.get(i);
-                if (player.isWaiting()) {
-                    playerIter.remove(player);
-                }
-            }
-            for (int i = 0; i < playerIter.size(); i++) {
-                Player player = playerIter.get(i);
-                if (CardsAgainstHumanity.blackCard.getAnswers() == 1) {
-                    cardBot.sendMessage("#CAH", (i + 1) + ": " + player.getPlayedCards()[0].getColored());
-                } else {
-                    cardBot.sendMessage("#CAH", (i + 1) + ": " + player.getPlayedCards()[0].getColored() + " | " + player.getPlayedCards()[1].getColored());
-                }
-            }
-            CardsAgainstHumanity.gameStatus = GameStatus.CZAR_TURN;
-        }
-    }
-
-    public static boolean inSession() {
-        return CardsAgainstHumanity.gameStatus == GameStatus.IN_SESSION || CardsAgainstHumanity.gameStatus == GameStatus.CZAR_TURN;
-    }
-
-    public static boolean proceedToNext() {
-        for (Player player : CardsAgainstHumanity.players) {
-            if (!player.hasPlayedCards() && !player.isCzar() && !player.isWaiting())
-                return false;
-        }
-        return true;
+        CardsAgainstHumanity.nextRound();
     }
 }
