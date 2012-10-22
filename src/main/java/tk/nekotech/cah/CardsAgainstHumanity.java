@@ -38,6 +38,19 @@ public class CardsAgainstHumanity extends PircBotX {
     public BlackCard blackCard;
     public String topic = Colors.BOLD + "Cards Against Humanity" + Colors.NORMAL;
 
+    public CardsAgainstHumanity() {
+        this.gameStatus = GameStatus.BOT_START;
+        try {
+            this.setupCards();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.connect = new Timer();
+        this.connect.schedule(new MasterConnect(this), 5000);
+        this.connect.schedule(new CardConnect(this), 10000);
+        new Startup(this).start();
+    }
+
     public void checkNext() {
         if (this.proceedToNext()) {
             this.cardBot.sendMessage("#CAH", Colors.BOLD + "All players have submitted their cards." + Colors.NORMAL + " Time for " + this.czar.getName() + " to pick the winning card.");
@@ -100,14 +113,9 @@ public class CardsAgainstHumanity extends PircBotX {
         return this.gameStatus == GameStatus.IN_SESSION || this.gameStatus == GameStatus.CZAR_TURN;
     }
 
-    public void main(final String[] args) throws Exception {
+    public static void main(final String[] args) {
         System.out.println("Starting...");
-        this.gameStatus = GameStatus.BOT_START;
-        this.setupCards();
-        this.connect = new Timer();
-        this.connect.schedule(new MasterConnect(this), 5000);
-        this.connect.schedule(new CardConnect(this), 10000);
-        new Startup(this).start();
+        new CardsAgainstHumanity();
     }
 
     public void nextRound() {
