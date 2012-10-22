@@ -28,7 +28,6 @@ public class CardsAgainstHumanity extends PircBotX {
     public SpamBot spamBot;
     private Timer connect;
     private Timer nagger;
-    public Nag nag;
     public GameStatus gameStatus;
     public ArrayList<Player> players;
     public ArrayList<Player> playerIter;
@@ -36,7 +35,7 @@ public class CardsAgainstHumanity extends PircBotX {
     public ArrayList<BlackCard> blackCards;
     public Player czar;
     public BlackCard blackCard;
-    public String topic = Colors.BOLD + "Cards Against Humanity" + Colors.NORMAL;
+    public String topic = Colors.BOLD + "Cards Against Humanity" + Colors.NORMAL + " | Report issues at https://github.com/soaringcats/cards-against-humanity/issues";
 
     public CardsAgainstHumanity() {
         this.gameStatus = GameStatus.BOT_START;
@@ -127,13 +126,26 @@ public class CardsAgainstHumanity extends PircBotX {
             this.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
             return;
         }
+        int winning = 0;
         for (final Player player : this.players) {
             if (player.isWaiting()) {
                 player.drawCardsForStart();
                 player.setWaiting(false);
             }
+            if (player.getScore() > winning) {
+                winning = player.getScore();
+            }
             player.newRound();
         }
+        StringBuilder sb = new StringBuilder();
+        for (Player player : this.players) {
+            if (player.getScore() == winning) {
+                sb.append(player.getName() + ", ");
+            }
+        }
+        sb.delete(sb.length() - 2, sb.length());
+        String win = (sb.toString().contains(", ") ? "Winner" : "Winners") + ": " + sb.toString();
+        this.cardBot.setTopic(this.cardBot.getChannel("#CAH"), this.topic + " | " + win);
         this.czar.setCzar(false);
         Collections.shuffle(this.players);
         this.czar = this.players.get(0);
@@ -145,7 +157,7 @@ public class CardsAgainstHumanity extends PircBotX {
         this.spamBot.sendMessage("#CAH", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying its number") + "]");
         this.cardBot.messageAllCards();
         this.cardBot.sendNotice(this.czar.getName(), "You don't have cards because you're the czar! Once everyone has played their cards you will be prompted to choose the best.");
-        this.nagger.schedule(this.nag, 60000, 60000);
+        this.nagger.schedule(new Nag(this), 60000, 60000);
     }
 
     public boolean proceedToNext() {
@@ -182,13 +194,12 @@ public class CardsAgainstHumanity extends PircBotX {
     public void ready() {
         final Channel chan = this.spamBot.getChannel("#CAH");
         this.nagger = new Timer();
-        this.spamBot.setTopic(chan, this.topic + " | Say 'join' without quotes to join the game. | Report issues at https://github.com/soaringcats/Cards-Against-Humanity/issues");
+        this.spamBot.setTopic(chan, this.topic + " | Say 'join' without quotes to join the game.");
         this.spamBot.sendMessage("#CAH", Colors.BOLD + "Welcome to Cards Against Humanity!");
         this.spamBot.sendMessage("#CAH", "To join the game simply say 'join' in chat (without quotes) and you will be added next round!");
         this.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
         this.connect.scheduleAtFixedRate(new StartGame(this.spamBot, this), 60000, 60000);
         this.spamBot.sendMessage("#CAH", "Running version " + this.spamBot.getCAHVersion() + " with " + this.whiteCards.size() + " white cards and " + this.blackCards.size() + " black cards.");
-        this.nag = new Nag(this);
     }
 
     private void setupCards() throws IOException {

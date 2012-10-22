@@ -6,10 +6,11 @@ import org.pircbotx.exception.IrcException;
 import org.pircbotx.exception.NickAlreadyInUseException;
 
 public class MasterBot extends PircBotX {
-    String version = "Version 1.0-SNAPSHOT";
+    String version = "1.0-SNAPSHOT";
 
     public MasterBot(final String nick) throws NickAlreadyInUseException, IOException, IrcException {
         this.setAutoNickChange(true);
+        this.setMessageDelay(500);
         this.setFinger("Cards Against Humanity bot. " + this.version);
         this.setLogin("cah");
         this.setName(nick);
