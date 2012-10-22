@@ -202,6 +202,10 @@ public class CardsAgainstHumanity extends PircBotX {
         } else if (this.gameStatus == GameStatus.CZAR_TURN) {
             this.cardBot.sendMessage("#CAH", "Uh-oh! " + player.getName() + " quit the game. Let's start a new round.");
             this.nextRound();
+        } else {
+            if (this.players.size() < 3) {
+                this.nextRound();
+            }
         }
     }
 
