@@ -20,7 +20,7 @@ public class Startup extends Thread {
         this.cah.spamBot.setTopic(channel, this.cah.topic + " | Bot currently offline.");
         String[] users = new String[this.cah.players.size()];
         for (int i = 0; i < this.cah.players.size(); i++) {
-            users[i] = this.cah.players.get(0).getName();
+            users[i] = this.cah.players.get(i).getName();
         }
         this.cah.deVoiceUsers(users);
         System.out.println("Nearly done!");
