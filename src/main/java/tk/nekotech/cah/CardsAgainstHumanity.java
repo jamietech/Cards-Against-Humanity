@@ -141,6 +141,7 @@ public class CardsAgainstHumanity extends PircBotX {
             if (player.isWaiting()) {
                 player.drawCardsForStart();
                 player.setWaiting(false);
+                this.spamBot.voice(this.spamBot.getChannel("#CAH"), this.spamBot.getUser(player.getName()));
             }
             if (player.getScore() > winning) {
                 winning = player.getScore();
@@ -181,6 +182,7 @@ public class CardsAgainstHumanity extends PircBotX {
     }
 
     public void processLeave(final Player player) {
+        this.spamBot.deVoice(this.spamBot.getChannel("#CAH"), this.spamBot.getUser(player.getName()));
         if (player.isCzar()) {
             Collections.shuffle(this.players);
             player.setCzar(false);
