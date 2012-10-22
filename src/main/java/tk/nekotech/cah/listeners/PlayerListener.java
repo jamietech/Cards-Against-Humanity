@@ -10,7 +10,7 @@ import tk.nekotech.cah.Player;
 import tk.nekotech.cah.card.WhiteCard;
 
 public class PlayerListener extends MasterListener {
-    private CardsAgainstHumanity cah;
+    private final CardsAgainstHumanity cah;
 
     public PlayerListener(final PircBotX bot, final CardsAgainstHumanity cah) {
         super(bot);
@@ -127,16 +127,16 @@ public class PlayerListener extends MasterListener {
                     this.bot.sendNotice(event.getUser(), "You've already changed your full deck this round. Wait until next round before changing again.");
                 } else {
                     card = card - 1;
-                    WhiteCard old = player.getCards().get(card);
+                    final WhiteCard old = player.getCards().get(card);
                     player.getCards().remove(old);
                     Collections.shuffle(this.cah.whiteCards);
-                    WhiteCard newc = this.cah.whiteCards.get(0);
+                    final WhiteCard newc = this.cah.whiteCards.get(0);
                     player.getCards().add(newc);
                     this.cah.whiteCards.remove(newc);
                     this.cah.whiteCards.add(old);
                     this.bot.sendNotice(event.getUser(), "You dropped card [" + old.getColored() + "] and picked up [" + newc.getColored() + "]; you now have " + player.getScore() + " awesome points.");
                 }
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 this.bot.sendNotice(event.getUser(), "You need to specify an amount of cards to drop.");
             }
         }
@@ -145,7 +145,7 @@ public class PlayerListener extends MasterListener {
     @Override
     @SuppressWarnings("rawtypes")
     public void onNickChange(final NickChangeEvent event) {
-        Player player = this.cah.getPlayer(event.getOldNick());
+        final Player player = this.cah.getPlayer(event.getOldNick());
         if (player != null) {
             player.setName(event.getNewNick());
         }

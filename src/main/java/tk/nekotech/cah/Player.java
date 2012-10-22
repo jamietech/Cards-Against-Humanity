@@ -23,12 +23,12 @@ public class Player {
         this.setCzar(false);
     }
 
-    public void addPoint() {
-        this.awesomePoints++;
-    }
-
     public void addChanged() {
         this.changedCards++;
+    }
+
+    public void addPoint() {
+        this.awesomePoints++;
     }
 
     public void drawCardsForStart() {
@@ -60,6 +60,10 @@ public class Player {
         return this.whiteCards;
     }
 
+    public int getChanged() {
+        return this.changedCards;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -70,10 +74,6 @@ public class Player {
 
     public int getScore() {
         return this.awesomePoints;
-    }
-
-    public int getChanged() {
-        return this.changedCards;
     }
 
     @Override

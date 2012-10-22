@@ -10,7 +10,7 @@ import tk.nekotech.cah.card.WhiteCard;
 import tk.nekotech.cah.listeners.PlayerListener;
 
 public class CardBot extends MasterBot {
-    private CardsAgainstHumanity cah;
+    private final CardsAgainstHumanity cah;
 
     public CardBot(final String nick, final CardsAgainstHumanity cah) throws NickAlreadyInUseException, IOException, IrcException {
         super(nick);

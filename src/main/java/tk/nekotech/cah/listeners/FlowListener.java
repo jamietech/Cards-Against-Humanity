@@ -11,7 +11,7 @@ import tk.nekotech.cah.CardsAgainstHumanity;
 import tk.nekotech.cah.Player;
 
 public class FlowListener extends MasterListener {
-    private CardsAgainstHumanity cah;
+    private final CardsAgainstHumanity cah;
 
     public FlowListener(final PircBotX bot, final CardsAgainstHumanity cah) {
         super(bot);

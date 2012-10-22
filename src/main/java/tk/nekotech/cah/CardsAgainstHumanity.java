@@ -24,9 +24,14 @@ import tk.nekotech.cah.tasks.Nag;
 import tk.nekotech.cah.tasks.StartGame;
 
 public class CardsAgainstHumanity extends PircBotX {
+    public static void main(final String[] args) {
+        System.out.println("Starting...");
+        new CardsAgainstHumanity();
+    }
+
     public CardBot cardBot;
     public SpamBot spamBot;
-    private Timer connect;
+    private final Timer connect;
     private Timer nagger;
     public GameStatus gameStatus;
     public ArrayList<Player> players;
@@ -41,7 +46,7 @@ public class CardsAgainstHumanity extends PircBotX {
         this.gameStatus = GameStatus.BOT_START;
         try {
             this.setupCards();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         this.connect = new Timer();
@@ -112,11 +117,6 @@ public class CardsAgainstHumanity extends PircBotX {
         return this.gameStatus == GameStatus.IN_SESSION || this.gameStatus == GameStatus.CZAR_TURN;
     }
 
-    public static void main(final String[] args) {
-        System.out.println("Starting...");
-        new CardsAgainstHumanity();
-    }
-
     public void nextRound() {
         this.nagger.cancel();
         this.nagger = new Timer();
@@ -137,14 +137,14 @@ public class CardsAgainstHumanity extends PircBotX {
             }
             player.newRound();
         }
-        StringBuilder sb = new StringBuilder();
-        for (Player player : this.players) {
+        final StringBuilder sb = new StringBuilder();
+        for (final Player player : this.players) {
             if (player.getScore() == winning) {
                 sb.append(player.getName() + ", ");
             }
         }
         sb.delete(sb.length() - 2, sb.length());
-        String win = (sb.toString().contains(", ") ? "Winner" : "Winners") + ": " + sb.toString();
+        final String win = (sb.toString().contains(", ") ? "Winner" : "Winners") + ": " + sb.toString();
         this.cardBot.setTopic(this.cardBot.getChannel("#CAH"), this.topic + " | " + win);
         this.czar.setCzar(false);
         Collections.shuffle(this.players);
