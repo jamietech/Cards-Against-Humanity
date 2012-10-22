@@ -140,7 +140,7 @@ public class PlayerListener extends MasterListener {
                 this.bot.sendNotice(event.getUser(), "You need to specify an amount of cards to drop.");
             }
         } else if (message.length == 1 && message[0].equalsIgnoreCase("info")) {
-            this.bot.sendNotice(event.getUser(), "You currently have " + player.getScore() + " awesome points.");
+            this.bot.sendNotice(event.getUser(), "You currently have " + player.getScore() + " awesome points. The black card is: " + this.cah.blackCard.getColored());
             this.bot.sendNotice(event.getUser(), "Your cards are: " + this.cah.getCards(player));
         }
     }
