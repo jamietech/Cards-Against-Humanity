@@ -27,7 +27,7 @@ public class PlayerListener extends MasterListener {
         if (player == null) {
             return;
         }
-        final String[] message = event.getMessage().split(" ");
+        final String[] message = event.getMessage().toLowerCase().split(" ");
         if (message.length == 1 && message[0].equalsIgnoreCase("info")) {
             this.bot.sendNotice(event.getUser(), "You currently have " + player.getScore() + " awesome points. The black card is: " + this.cah.blackCard.getColored());
             this.bot.sendNotice(event.getUser(), "Your cards are: " + this.cah.getCards(player));
