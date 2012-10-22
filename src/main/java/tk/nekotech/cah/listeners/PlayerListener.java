@@ -139,6 +139,7 @@ public class PlayerListener extends MasterListener {
                     player.getCards().add(newc);
                     this.cah.whiteCards.remove(newc);
                     this.cah.whiteCards.add(old);
+                    player.subtractPoint();
                     this.bot.sendNotice(event.getUser(), "You dropped card [" + old.getColored() + "] and picked up [" + newc.getColored() + "]; you now have " + player.getScore() + " awesome points.");
                 }
             } catch (final NumberFormatException e) {

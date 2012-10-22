@@ -152,6 +152,10 @@ public class Player {
         this.isWaiting = waiting;
     }
 
+    public void subtractPoint() {
+        this.awesomePoints--;
+    }
+
     @Override
     public String toString() {
         return "Player{" + "name=" + this.getName() + '}';
