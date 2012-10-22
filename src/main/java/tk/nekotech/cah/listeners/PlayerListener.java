@@ -9,23 +9,25 @@ import tk.nekotech.cah.Player;
 import tk.nekotech.cah.card.WhiteCard;
 
 public class PlayerListener extends MasterListener {
-    public PlayerListener(final PircBotX bot) {
+    private CardsAgainstHumanity cah;
+
+    public PlayerListener(final PircBotX bot, final CardsAgainstHumanity cah) {
         super(bot);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
     public void onMessage(final MessageEvent event) {
-        if (event.getUser().getNick().contains("CAH-Master") || !CardsAgainstHumanity.inSession() || event.getMessage().equalsIgnoreCase("join") || event.getMessage().equalsIgnoreCase("quit")) {
+        if (event.getUser().getNick().contains("CAH-Master") || !this.cah.inSession() || event.getMessage().equalsIgnoreCase("join") || event.getMessage().equalsIgnoreCase("quit")) {
             return;
         }
-        final Player player = CardsAgainstHumanity.getPlayer(event.getUser().getNick());
+        final Player player = this.cah.getPlayer(event.getUser().getNick());
         if (player == null) {
             return;
         }
         final String[] message = event.getMessage().split(" ");
         if (player.isCzar()) {
-            if (CardsAgainstHumanity.gameStatus == GameStatus.IN_SESSION && message.length == 1) {
+            if (this.cah.gameStatus == GameStatus.IN_SESSION && message.length == 1) {
                 this.bot.sendNotice(event.getUser(), "You're the czar; please wait until it's time for voting.");
             } else {
                 if (message.length == 1) {
@@ -35,21 +37,21 @@ public class PlayerListener extends MasterListener {
                     } catch (final NumberFormatException e) {
                         this.bot.sendNotice(event.getUser(), "Uh-oh! I couldn't find that answer. Try a number instead.");
                     }
-                    if (chosen > CardsAgainstHumanity.playerIter.size()) {
+                    if (chosen > this.cah.playerIter.size()) {
                         this.bot.sendNotice(event.getUser(), "I couldn't find that answer.");
                     } else {
                         chosen = chosen - 1;
-                        final Player win = CardsAgainstHumanity.playerIter.get(chosen);
+                        final Player win = this.cah.playerIter.get(chosen);
                         final StringBuilder send = new StringBuilder();
                         send.append(win.getName() + " wins this round; card was ");
-                        if (CardsAgainstHumanity.blackCard.getAnswers() == 1) {
-                            send.append(CardsAgainstHumanity.blackCard.getColored().replace("_", win.getPlayedCards()[0].getColored()));
+                        if (this.cah.blackCard.getAnswers() == 1) {
+                            send.append(this.cah.blackCard.getColored().replace("_", win.getPlayedCards()[0].getColored()));
                         } else {
-                            send.append(CardsAgainstHumanity.blackCard.getColored().replaceFirst("_", win.getPlayedCards()[0].getColored()).replaceFirst("_", win.getPlayedCards()[1].getColored()));
+                            send.append(this.cah.blackCard.getColored().replaceFirst("_", win.getPlayedCards()[0].getColored()).replaceFirst("_", win.getPlayedCards()[1].getColored()));
                         }
-                        CardsAgainstHumanity.spamBot.sendMessage("#CAH", send.toString());
+                        this.cah.spamBot.sendMessage("#CAH", send.toString());
                         win.addPoint();
-                        CardsAgainstHumanity.nextRound();
+                        this.cah.nextRound();
                     }
                 } else {
                     //this.bot.sendNotice(event.getUser(), "Try sending 1 number to pick the winner.");
@@ -58,10 +60,10 @@ public class PlayerListener extends MasterListener {
             }
             return;
         }
-        if (CardsAgainstHumanity.gameStatus == GameStatus.CZAR_TURN) {
+        if (this.cah.gameStatus == GameStatus.CZAR_TURN) {
             return;
         }
-        if (message.length == 1 && CardsAgainstHumanity.blackCard.getAnswers() == 1) {
+        if (message.length == 1 && this.cah.blackCard.getAnswers() == 1) {
             if (player.isWaiting()) {
                 this.bot.sendNotice(event.getUser(), "You're currently waiting for the next round. Hold tight!");
             }
@@ -78,13 +80,13 @@ public class PlayerListener extends MasterListener {
                         final WhiteCard card = player.getCards().get(answer);
                         this.bot.sendNotice(event.getUser(), "Saved answer " + card.getFull() + "!");
                         player.playCard(card);
-                        CardsAgainstHumanity.checkNext();
+                        this.cah.checkNext();
                     }
                 }
             } catch (final NumberFormatException e) {
                 this.bot.sendNotice(event.getUser(), "You can't answer with that! Try use a number instead.");
             }
-        } else if (message.length == 2 && CardsAgainstHumanity.blackCard.getAnswers() == 2) {
+        } else if (message.length == 2 && this.cah.blackCard.getAnswers() == 2) {
             if (player.isWaiting()) {
                 this.bot.sendNotice(event.getUser(), "You're currently waiting for the next round. Hold tight!");
             }
@@ -111,11 +113,11 @@ public class PlayerListener extends MasterListener {
                     }
                     this.bot.sendNotice(event.getUser(), "Saved answers " + cards[0].getFull() + ", " + cards[1].getFull() + "!");
                     player.playCards(cards);
-                    CardsAgainstHumanity.checkNext();
+                    this.cah.checkNext();
                 }
             }
         } else {
-            /*final boolean one = CardsAgainstHumanity.blackCard.getAnswers() == 1;
+            /*final boolean one = this.cah.blackCard.getAnswers() == 1;
             this.bot.sendNotice(event.getUser(), "You answered incorrectly! Enter the " + (one ? "number" : "numbers") + " in relation to the " + (one ? "card" : "cards") + " you wish to play.");*/
             // Allow conversation.
         }
@@ -124,7 +126,7 @@ public class PlayerListener extends MasterListener {
     @Override
     @SuppressWarnings("rawtypes")
     public void onNickChange(final NickChangeEvent event) {
-        for (final Player player : CardsAgainstHumanity.players) {
+        for (final Player player : this.cah.players) {
             if (player.getName().equals(event.getOldNick())) {
                 player.setName(event.getNewNick());
             }

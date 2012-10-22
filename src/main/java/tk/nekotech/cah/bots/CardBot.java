@@ -10,19 +10,21 @@ import tk.nekotech.cah.card.WhiteCard;
 import tk.nekotech.cah.listeners.PlayerListener;
 
 public class CardBot extends MasterBot {
-    public CardBot(final String nick) throws NickAlreadyInUseException, IOException, IrcException {
+    private CardsAgainstHumanity cah;
+
+    public CardBot(final String nick, final CardsAgainstHumanity cah) throws NickAlreadyInUseException, IOException, IrcException {
         super(nick);
-        new PlayerListener(this);
+        new PlayerListener(this, cah);
         try {
-            CardsAgainstHumanity.ready();
+            cah.ready();
         } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
     public void messageAllCards() {
-        for (final Player player : CardsAgainstHumanity.players) {
-            if (CardsAgainstHumanity.czar == player) {
+        for (final Player player : this.cah.players) {
+            if (this.cah.czar == player) {
                 continue;
             }
             final StringBuilder sb = new StringBuilder();

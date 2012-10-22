@@ -8,14 +8,16 @@ import tk.nekotech.cah.card.WhiteCard;
 
 public class Player {
     private String name;
+    private final CardsAgainstHumanity cah;
     private final ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private int awesomePoints = 0;
     private WhiteCard[] playedCards = null;
     private boolean czar;
     private boolean isWaiting;
 
-    public Player(final String name) {
+    public Player(final String name, final CardsAgainstHumanity cah) {
         this.name = name;
+        this.cah = cah;
         this.setWaiting(false);
         this.setCzar(false);
     }
@@ -25,17 +27,17 @@ public class Player {
     }
 
     public void drawCardsForStart() {
-        Collections.shuffle(CardsAgainstHumanity.whiteCards);
+        Collections.shuffle(this.cah.whiteCards);
         int i = 0;
-        final List<WhiteCard> newCards = new ArrayList<WhiteCard>(CardsAgainstHumanity.whiteCards);
-        for (final WhiteCard card : CardsAgainstHumanity.whiteCards) {
+        final List<WhiteCard> newCards = new ArrayList<WhiteCard>(this.cah.whiteCards);
+        for (final WhiteCard card : this.cah.whiteCards) {
             if (i < 10) {
                 this.whiteCards.add(card);
                 newCards.remove(card);
                 i++;
             }
         }
-        CardsAgainstHumanity.whiteCards = newCards;
+        this.cah.whiteCards = newCards;
     }
 
     @Override
@@ -92,10 +94,10 @@ public class Player {
         }
         this.whiteCards.remove(card);
         this.playedCards = new WhiteCard[] { card };
-        Collections.shuffle(CardsAgainstHumanity.whiteCards);
-        final WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
+        Collections.shuffle(this.cah.whiteCards);
+        final WhiteCard whiteCard = this.cah.whiteCards.get(0);
         this.whiteCards.add(whiteCard);
-        CardsAgainstHumanity.whiteCards.remove(whiteCard);
+        this.cah.whiteCards.remove(whiteCard);
         return true;
     }
 
@@ -106,15 +108,15 @@ public class Player {
             }
         }
         this.whiteCards.removeAll(Arrays.asList(cards));
-        CardsAgainstHumanity.whiteCards.addAll(Arrays.asList(cards));
+        this.cah.whiteCards.addAll(Arrays.asList(cards));
         this.playedCards = cards;
-        Collections.shuffle(CardsAgainstHumanity.whiteCards);
-        WhiteCard whiteCard = CardsAgainstHumanity.whiteCards.get(0);
+        Collections.shuffle(this.cah.whiteCards);
+        WhiteCard whiteCard = this.cah.whiteCards.get(0);
         this.whiteCards.add(whiteCard);
-        CardsAgainstHumanity.whiteCards.remove(whiteCard);
-        whiteCard = CardsAgainstHumanity.whiteCards.get(0);
+        this.cah.whiteCards.remove(whiteCard);
+        whiteCard = this.cah.whiteCards.get(0);
         this.whiteCards.add(whiteCard);
-        CardsAgainstHumanity.whiteCards.remove(whiteCard);
+        this.cah.whiteCards.remove(whiteCard);
         return true;
     }
 
