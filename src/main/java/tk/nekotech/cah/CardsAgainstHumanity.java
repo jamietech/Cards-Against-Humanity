@@ -90,6 +90,16 @@ public class CardsAgainstHumanity extends PircBotX {
         return null;
     }
 
+    public String getCards(final Player player) {
+        final StringBuilder sb = new StringBuilder();
+        int i = 1;
+        for (final WhiteCard card : player.getCards()) {
+            sb.append(i + " [" + Colors.BOLD + card.getColored() + "] ");
+            i++;
+        }
+        return sb.toString();
+    }
+
     private void ifNotExists(final File... files) {
         for (final File file : files) {
             if (file.exists()) {
