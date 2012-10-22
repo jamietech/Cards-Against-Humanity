@@ -5,7 +5,6 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 import org.pircbotx.hooks.events.KickEvent;
 import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.NickChangeEvent;
 import org.pircbotx.hooks.events.PartEvent;
 import org.pircbotx.hooks.events.QuitEvent;
 import tk.nekotech.cah.CardsAgainstHumanity;
@@ -17,14 +16,6 @@ public class FlowListener extends MasterListener {
     public FlowListener(final PircBotX bot, final CardsAgainstHumanity cah) {
         super(bot);
         this.cah = cah;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void onNick(final NickChangeEvent event) {
-        Player player = this.cah.getPlayer(event.getOldNick());
-        if (player != null) {
-            player.setName(event.getNewNick());
-        }
     }
 
     @Override

@@ -145,10 +145,9 @@ public class PlayerListener extends MasterListener {
     @Override
     @SuppressWarnings("rawtypes")
     public void onNickChange(final NickChangeEvent event) {
-        for (final Player player : this.cah.players) {
-            if (player.getName().equals(event.getOldNick())) {
-                player.setName(event.getNewNick());
-            }
+        Player player = this.cah.getPlayer(event.getOldNick());
+        if (player != null) {
+            player.setName(event.getNewNick());
         }
     }
 }
