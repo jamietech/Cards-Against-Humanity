@@ -183,6 +183,7 @@ public class CardsAgainstHumanity extends PircBotX {
 
     public void processLeave(final Player player) {
         this.spamBot.deVoice(this.spamBot.getChannel("#CAH"), this.spamBot.getUser(player.getName()));
+        this.players.remove(player);
         if (player.isCzar()) {
             Collections.shuffle(this.players);
             player.setCzar(false);

@@ -24,7 +24,6 @@ public class FlowListener extends MasterListener {
         final Player player = this.cah.getPlayer(event.getRecipient().getNick());
         if (player != null) {
             this.cah.processLeave(player);
-            this.cah.players.remove(player);
         }
     }
 
@@ -63,7 +62,6 @@ public class FlowListener extends MasterListener {
             if (playing) {
                 this.bot.sendNotice(user, "Good-bye! Your cards for this round have been dropped. You had " + playa.getScore() + " points!");
                 this.cah.processLeave(playa);
-                this.cah.players.remove(playa);
             } else {
                 this.bot.sendNotice(user, "You're not currently playing the game!");
             }
@@ -79,7 +77,6 @@ public class FlowListener extends MasterListener {
         final Player player = this.cah.getPlayer(event.getUser().getNick());
         if (player != null) {
             this.cah.processLeave(player);
-            this.cah.players.remove(player);
         }
     }
 
@@ -89,7 +86,6 @@ public class FlowListener extends MasterListener {
         final Player player = this.cah.getPlayer(event.getUser().getNick());
         if (player != null) {
             this.cah.processLeave(player);
-            this.cah.players.remove(player);
         }
     }
 }
