@@ -100,6 +100,14 @@ public class CardsAgainstHumanity extends PircBotX {
         return sb.toString();
     }
 
+    public Player getCzar() {
+        Collections.shuffle(this.players);
+        if (this.players.get(0) == this.czar) {
+            return this.getCzar();
+        }
+        return this.players.get(0);
+    }
+
     private void ifNotExists(final File... files) {
         for (final File file : files) {
             if (file.exists()) {
@@ -159,8 +167,7 @@ public class CardsAgainstHumanity extends PircBotX {
         if (winning > 0)
             this.cardBot.setTopic(this.cardBot.getChannel("#CAH"), this.topic + " | " + win);
         this.czar.setCzar(false);
-        Collections.shuffle(this.players);
-        this.czar = this.players.get(0);
+        this.czar = this.getCzar();
         this.czar.setCzar(true);
         this.spamBot.sendMessage("#CAH", "The new czar is " + Colors.BOLD + this.czar.getName());
         Collections.shuffle(this.blackCards);
