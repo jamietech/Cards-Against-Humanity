@@ -31,6 +31,7 @@ public class PlayerListener extends MasterListener {
         if (message.length == 1 && message[0].equalsIgnoreCase("info")) {
             this.bot.sendNotice(event.getUser(), "You currently have " + player.getScore() + " awesome points. The black card is: " + this.cah.blackCard.getColored());
             this.bot.sendNotice(event.getUser(), "Your cards are: " + this.cah.getCards(player));
+            return;
         }
         if (player.isCzar()) {
             if (this.cah.gameStatus == GameStatus.IN_SESSION && message.length == 1) {
