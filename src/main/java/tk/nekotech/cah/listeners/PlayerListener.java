@@ -124,7 +124,7 @@ public class PlayerListener extends MasterListener {
             int card = 0;
             try {
                 card = Integer.parseInt(message[1]);
-                if (player.getScore() > 1) {
+                if (player.getScore() < 1) {
                     this.bot.sendNotice(event.getUser(), "You don't have enough awesome points to do that.");
                 } else if (card > 10 || card < 1) {
                     this.bot.sendNotice(event.getUser(), "You don't have that card! Pick a card between 1-10.");
