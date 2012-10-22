@@ -14,6 +14,7 @@ public class CardBot extends MasterBot {
 
     public CardBot(final String nick, final CardsAgainstHumanity cah) throws NickAlreadyInUseException, IOException, IrcException {
         super(nick);
+        this.cah = cah;
         new PlayerListener(this, cah);
         try {
             cah.ready();

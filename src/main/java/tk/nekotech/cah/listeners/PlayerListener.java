@@ -13,6 +13,7 @@ public class PlayerListener extends MasterListener {
 
     public PlayerListener(final PircBotX bot, final CardsAgainstHumanity cah) {
         super(bot);
+        this.cah = cah;
     }
 
     @Override
