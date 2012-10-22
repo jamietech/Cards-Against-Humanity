@@ -44,6 +44,9 @@ public class FlowListener extends MasterListener {
                     this.bot.sendNotice(user, "Welcome to " + Colors.BOLD + "Cards Against Humanity" + Colors.NORMAL + "! Your cards will be assigned next round.");
                     final Player player = new Player(user.getNick(), this.cah);
                     this.cah.players.add(player);
+                    if (this.cah.inSession()) {
+                        player.setWaiting(true);
+                    }
                 }
             }
         }

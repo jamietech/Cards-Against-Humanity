@@ -261,9 +261,51 @@ public class CardsAgainstHumanity extends PircBotX {
                 }
             }
             player.drawCardsForStart();
-            this.cardBot.voice(this.cardBot.getChannel("#CAH"), this.cardBot.getUser(player.getName()));
         }
+        String[] users = new String[players.size()];
+        for (int i = 0; i < players.size(); i++) {
+            users[i] = players.get(i).getName();
+        }
+        this.voiceUsers(users);
         this.czar = this.players.get(0);
         this.nextRound();
+    }
+
+    public void voiceUsers(String... users) {
+        if (users.length < 1) {
+            return;
+        }
+        Channel chan = this.spamBot.getChannel("#CAH");
+        String mode = "+";
+        StringBuilder sb = new StringBuilder();
+        for (String user : users) {
+            mode += "v";
+            sb.append(user + " ");
+            if (("MODE #CAH :" + mode + " " + sb.toString()).length() >= 482) {
+                this.setMode(chan, mode + " " + sb.toString());
+                mode = "+";
+                sb = new StringBuilder();
+            }
+        }
+        this.setMode(chan, mode + " " + sb.toString());
+    }
+
+    public void deVoiceUsers(String... users) {
+        if (users.length < 1) {
+            return;
+        }
+        Channel chan = this.spamBot.getChannel("#CAH");
+        String mode = "-";
+        StringBuilder sb = new StringBuilder();
+        for (String user : users) {
+            mode += "v";
+            sb.append(user + " ");
+            if (("MODE #CAH :" + mode + " " + sb.toString()).length() >= 482) {
+                this.setMode(chan, mode + " " + sb.toString());
+                mode = "-";
+                sb = new StringBuilder();
+            }
+        }
+        this.setMode(chan, mode + " " + sb.toString());
     }
 }
