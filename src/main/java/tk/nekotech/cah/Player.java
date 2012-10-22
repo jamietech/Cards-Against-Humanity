@@ -12,6 +12,7 @@ public class Player {
     private final ArrayList<WhiteCard> whiteCards = new ArrayList<WhiteCard>();
     private int awesomePoints = 0;
     private int changedCards = 0;
+    private int warnings = 0;
     private WhiteCard[] playedCards = null;
     private boolean czar;
     private boolean isWaiting;
@@ -29,6 +30,10 @@ public class Player {
 
     public void addPoint() {
         this.awesomePoints++;
+    }
+
+    public void addWarning() {
+        this.warnings++;
     }
 
     public void drawCardsForStart() {
@@ -76,6 +81,10 @@ public class Player {
         return this.awesomePoints;
     }
 
+    public int getWarnings() {
+        return this.warnings;
+    }
+
     @Override
     public int hashCode() {
         return this.name.toLowerCase().hashCode();
@@ -96,6 +105,7 @@ public class Player {
     public void newRound() {
         this.playedCards = null;
         this.changedCards = 0;
+        this.warnings = 0;
     }
 
     public boolean playCard(final WhiteCard card) {
