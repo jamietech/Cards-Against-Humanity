@@ -18,7 +18,7 @@ public class MasterBot extends PircBotX {
         System.out.println(nick + " is connecting!");
         //this.setVerbose(true);
         this.connect("irc.esper.net");
-        this.joinChannel("#CAH");
+        this.joinChannel("#MIASACraft");
     }
 
     public String getCAHVersion() {
