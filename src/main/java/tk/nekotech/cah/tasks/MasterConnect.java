@@ -14,7 +14,7 @@ public class MasterConnect extends TimerTask {
     @Override
     public void run() {
         try {
-            this.cah.spamBot = new SpamBot("CAH-Master", this.cah);
+            this.cah.spamBot = new SpamBot(cah.mBotname, this.cah);
         } catch (final Exception e) {
             System.err.println("\n\n****************");
             System.err.println("Exception during startup of Master bot!\n");

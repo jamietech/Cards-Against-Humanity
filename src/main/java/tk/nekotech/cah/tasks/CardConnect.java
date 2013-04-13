@@ -14,7 +14,7 @@ public class CardConnect extends TimerTask {
     @Override
     public void run() {
         try {
-            this.cah.cardBot = new CardBot("CAH-Cards", this.cah);
+            this.cah.cardBot = new CardBot(cah.cBotname, this.cah);
         } catch (final Exception e) {
             System.err.println("\n\n****************");
             System.err.println("Exception during startup of Cards bot!\n");
