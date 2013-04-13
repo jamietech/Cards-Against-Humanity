@@ -23,41 +23,7 @@ import tk.nekotech.cah.tasks.Nag;
 import tk.nekotech.cah.tasks.StartGame;
 
 public class CardsAgainstHumanity {
-    public static String channel;
-    public static String mBotname;
-    public static String cBotname;
-    public static String ircnet;
     public static void main(final String[] args) {
-        if (args.length >= 1){
-            ircnet = args[0];
-            if (args.length >= 2){
-                channel = "#" + args[1];
-                if (args.length >= 3){
-                    mBotname = args[2];
-                    if (args.length >= 4){
-                    cBotname = args[3];
-                    }
-                    else{
-                        cBotname = "CAH-Cards";  
-                    }
-                }
-                else{
-                    mBotname = "CAH-Master";
-                    cBotname = "CAH-Cards";  
-                }
-            }
-            else{
-              channel = "#CAH";
-              mBotname = "CAH-Master";
-              cBotname = "CAH-Cards";  
-            }
-        }
-        else{
-            ircnet = "irc.esper.net";
-            channel = "#CAH";
-            mBotname = "CAH-Master";
-            cBotname = "CAH-Cards";
-        }
         System.out.println("Starting...");
         new CardsAgainstHumanity();
     }
@@ -90,8 +56,8 @@ public class CardsAgainstHumanity {
 
     public void checkNext() {
         if (this.proceedToNext()) {
-            this.cardBot.sendMessage(channel, Colors.BOLD + "All players have submitted their cards." + Colors.NORMAL + " Time for " + this.czar.getName() + " to pick the winning card.");
-            this.cardBot.sendMessage(channel, this.blackCard.getColored());
+            this.cardBot.sendMessage("#MIASACraft", Colors.BOLD + "All players have submitted their cards." + Colors.NORMAL + " Time for " + this.czar.getName() + " to pick the winning card.");
+            this.cardBot.sendMessage("#MIASACraft", this.blackCard.getColored());
             this.cardBot.sendNotice(this.czar.getName(), "Say the number of the card you wish to win.");
             Collections.shuffle(this.players);
             this.playerIter = new ArrayList<Player>(this.players);
@@ -105,9 +71,9 @@ public class CardsAgainstHumanity {
             for (int i = 0; i < this.playerIter.size(); i++) {
                 final Player player = this.playerIter.get(i);
                 if (this.blackCard.getAnswers() == 1) {
-                    this.cardBot.sendMessage(channel, i + 1 + ": " + player.getPlayedCards()[0].getColored());
+                    this.cardBot.sendMessage("#MIASACraft", i + 1 + ": " + player.getPlayedCards()[0].getColored());
                 } else {
-                    this.cardBot.sendMessage(channel, i + 1 + ": " + player.getPlayedCards()[0].getColored() + " | " + player.getPlayedCards()[1].getColored());
+                    this.cardBot.sendMessage("#MIASACraft", i + 1 + ": " + player.getPlayedCards()[0].getColored() + " | " + player.getPlayedCards()[1].getColored());
                 }
             }
             this.gameStatus = GameStatus.CZAR_TURN;
@@ -173,7 +139,7 @@ public class CardsAgainstHumanity {
         this.nagger = new Timer();
         this.gameStatus = GameStatus.IN_SESSION;
         if (this.players.size() < 3) {
-            this.spamBot.sendMessage(channel, "Uh-oh! There aren't enough players to continue. Say 'quit' to quit, 'join' to join.");
+            this.spamBot.sendMessage("#MIASACraft", "Uh-oh! There aren't enough players to continue. Say 'quit' to quit, 'join' to join.");
             this.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
             return;
         }
@@ -182,7 +148,7 @@ public class CardsAgainstHumanity {
             if (player.isWaiting()) {
                 player.drawCardsForStart();
                 player.setWaiting(false);
-                this.spamBot.voice(this.spamBot.getChannel(channel), this.spamBot.getUser(player.getName()));
+                this.spamBot.voice(this.spamBot.getChannel("#MIASACraft"), this.spamBot.getUser(player.getName()));
             }
             if (player.getScore() > winning) {
                 winning = player.getScore();
@@ -198,15 +164,15 @@ public class CardsAgainstHumanity {
         sb.delete(sb.length() - 2, sb.length());
         final String win = (sb.toString().contains(", ") ? "Winners" : "Winner") + ": " + sb.toString();
         if (winning > 0)
-            this.cardBot.setTopic(this.cardBot.getChannel(channel), this.topic + " | " + win + " (" + winning + ")");
+            this.cardBot.setTopic(this.cardBot.getChannel("#MIASACraft"), this.topic + " | " + win + " (" + winning + ")");
         this.czar.setCzar(false);
         this.czar = this.getCzar();
         this.czar.setCzar(true);
-        this.spamBot.sendMessage(channel, "The new czar is " + Colors.BOLD + this.czar.getName());
+        this.spamBot.sendMessage("#MIASACraft", "The new czar is " + Colors.BOLD + this.czar.getName());
         Collections.shuffle(this.blackCards);
         final BlackCard card = this.blackCards.get(0);
         this.blackCard = card;
-        this.spamBot.sendMessage(channel, "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying its number") + "]");
+        this.spamBot.sendMessage("#MIASACraft", "Fill in the " + (card.getAnswers() > 1 ? "blanks" : "blank") + ": " + Colors.BOLD + card.getColored() + " [Play your white " + (card.getAnswers() > 1 ? "cards by saying their numbers" : "card by saying its number") + "]");
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -226,25 +192,25 @@ public class CardsAgainstHumanity {
     }
 
     public void processLeave(final Player player) {
-        this.spamBot.deVoice(this.spamBot.getChannel(channel), this.spamBot.getUser(player.getName()));
+        this.spamBot.deVoice(this.spamBot.getChannel("#MIASACraft"), this.spamBot.getUser(player.getName()));
         this.players.remove(player);
         if (player.isCzar()) {
             Collections.shuffle(this.players);
             player.setCzar(false);
             this.czar = this.players.get(0);
             this.czar.setCzar(true);
-            this.spamBot.sendMessage(channel, "The current czar, " + player.getName() + " quit the game and " + this.czar.getName() + " is now the new czar for this round.");
+            this.spamBot.sendMessage("#MIASACraft", "The current czar, " + player.getName() + " quit the game and " + this.czar.getName() + " is now the new czar for this round.");
             this.czar.newRound();
             if (this.gameStatus == GameStatus.CZAR_TURN) {
                 if (this.players.size() - 1 < 3) {
-                    this.spamBot.sendMessage(channel, "Uh-oh! There aren't enough players to continue. Say 'quit' to quit, 'join' to join.");
+                    this.spamBot.sendMessage("#MIASACraft", "Uh-oh! There aren't enough players to continue. Say 'quit' to quit, 'join' to join.");
                     this.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
                     return;
                 }
                 this.cardBot.sendNotice(this.czar.getName(), "Say the number of the card you wish to win.");
             }
         } else if (this.gameStatus == GameStatus.CZAR_TURN) {
-            this.cardBot.sendMessage(channel, "Uh-oh! " + player.getName() + " quit the game. Let's start a new round.");
+            this.cardBot.sendMessage("#MIASACraft", "Uh-oh! " + player.getName() + " quit the game. Let's start a new round.");
             this.nextRound();
         } else {
             if (this.players.size() < 3) {
@@ -255,14 +221,14 @@ public class CardsAgainstHumanity {
     }
 
     public void ready() {
-        final Channel chan = this.spamBot.getChannel(channel);
+        final Channel chan = this.spamBot.getChannel("#MIASACraft");
         this.nagger = new Timer();
         this.spamBot.setTopic(chan, this.topic + " | Say 'join' without quotes to join the game.");
-        this.spamBot.sendMessage(channel, Colors.BOLD + "Welcome to Cards Against Humanity!");
-        this.spamBot.sendMessage(channel, "To join the game simply say 'join' in chat (without quotes) and you will be added next round!");
+        this.spamBot.sendMessage("#MIASACraft", Colors.BOLD + "Welcome to Cards Against Humanity!");
+        this.spamBot.sendMessage("#MIASACraft", "To join the game simply say 'join' in chat (without quotes) and you will be added next round!");
         this.gameStatus = GameStatus.NOT_ENOUGH_PLAYERS;
         this.connect.scheduleAtFixedRate(new StartGame(this.spamBot, this), 60000, 60000);
-        this.spamBot.sendMessage(channel, "Running version " + this.spamBot.getCAHVersion() + " with " + this.whiteCards.size() + " white cards and " + this.blackCards.size() + " black cards.");
+        this.spamBot.sendMessage("#MIASACraft", "Running version " + this.spamBot.getCAHVersion() + " with " + this.whiteCards.size() + " white cards and " + this.blackCards.size() + " black cards.");
     }
 
     private void setupCards() throws IOException {
@@ -313,13 +279,13 @@ public class CardsAgainstHumanity {
         if (users.length < 1) {
             return;
         }
-        Channel chan = this.spamBot.getChannel(channel);
+        Channel chan = this.spamBot.getChannel("#MIASACraft");
         String mode = "+";
         StringBuilder sb = new StringBuilder();
         for (String user : users) {
             mode += "v";
             sb.append(user + " ");
-            if (("MODE " + channel + " :" + mode + " " + sb.toString()).length() >= 482) {
+            if (("MODE #MIASACraft :" + mode + " " + sb.toString()).length() >= 482) {
                 this.spamBot.setMode(chan, mode + " " + sb.toString());
                 mode = "+";
                 sb = new StringBuilder();
@@ -332,13 +298,13 @@ public class CardsAgainstHumanity {
         if (users.length < 1) {
             return;
         }
-        Channel chan = this.spamBot.getChannel(channel);
+        Channel chan = this.spamBot.getChannel("#MIASACraft");
         String mode = "-";
         StringBuilder sb = new StringBuilder();
         for (String user : users) {
             mode += "v";
             sb.append(user + " ");
-            if (("MODE " + channel + " :" + mode + " " + sb.toString()).length() >= 482) {
+            if (("MODE #MIASACraft :" + mode + " " + sb.toString()).length() >= 482) {
                 this.spamBot.setMode(chan, mode + " " + sb.toString());
                 mode = "-";
                 sb = new StringBuilder();

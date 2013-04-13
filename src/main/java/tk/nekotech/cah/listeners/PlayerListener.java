@@ -20,7 +20,7 @@ public class PlayerListener extends MasterListener {
     @Override
     @SuppressWarnings("rawtypes")
     public void onMessage(final MessageEvent event) {
-        if (event.getUser().getNick().contains(cah.mBotname) || !this.cah.inSession() || event.getMessage().equalsIgnoreCase("join") || event.getMessage().equalsIgnoreCase("quit") || event.getMessage().equalsIgnoreCase("start")) {
+        if (event.getUser().getNick().contains("CAH-Master") || !this.cah.inSession() || event.getMessage().equalsIgnoreCase("join") || event.getMessage().equalsIgnoreCase("quit")) {
             return;
         }
         final Player player = this.cah.getPlayer(event.getUser().getNick());
@@ -56,7 +56,7 @@ public class PlayerListener extends MasterListener {
                         } else {
                             send.append(this.cah.blackCard.getColored().replaceFirst("_", win.getPlayedCards()[0].getColored()).replaceFirst("_", win.getPlayedCards()[1].getColored()));
                         }
-                        this.cah.spamBot.sendMessage(cah.channel, send.toString());
+                        this.cah.spamBot.sendMessage("#MIASACraft", send.toString());
                         win.addPoint();
                         this.cah.nextRound();
                     }

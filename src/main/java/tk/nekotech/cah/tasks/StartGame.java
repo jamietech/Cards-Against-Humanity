@@ -21,7 +21,7 @@ public class StartGame extends TimerTask {
             if (this.cah.players.size() >= 3) {
                 this.cah.startGame();
             } else {
-                this.bot.sendMessage(cah.channel, "There are not enough players to start the game. There are " + this.cah.players.size() + " players when a minimum of 3 are needed. Will retry in 1 minute. " + Colors.BOLD + "To join the game say 'join'!");
+                this.bot.sendMessage("#MIASACraft", "There are not enough players to start the game. There are " + this.cah.players.size() + " players when a minimum of 3 are needed. Will retry in 1 minute. " + Colors.BOLD + "To join the game say 'join'!");
             }
         }
     }
