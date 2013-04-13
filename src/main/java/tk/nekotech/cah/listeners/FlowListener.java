@@ -9,6 +9,7 @@ import org.pircbotx.hooks.events.PartEvent;
 import org.pircbotx.hooks.events.QuitEvent;
 import tk.nekotech.cah.CardsAgainstHumanity;
 import tk.nekotech.cah.Player;
+import tk.nekotech.cah.tasks.StartGame;
 
 public class FlowListener extends MasterListener {
     private final CardsAgainstHumanity cah;
@@ -33,6 +34,9 @@ public class FlowListener extends MasterListener {
         final String message = event.getMessage();
         final String quick = message.toLowerCase();
         final User user = event.getUser();
+        if (quick.equals("start")){
+            new StartGame(this.cah.spamBot, this.cah).run();
+        }
         if (quick.equals("join")) {
             if (this.cah.getPlayer(user.getNick()) != null) {
                 this.bot.sendNotice(user, "You're already playing the game!");

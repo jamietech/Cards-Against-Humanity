@@ -16,7 +16,7 @@ public class Startup extends Thread {
         final Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
         System.out.println("Shutting down...");
-        final Channel channel = this.cah.spamBot.getChannel("#MIASACraft");
+        final Channel channel = this.cah.spamBot.getChannel(cah.channel);
         this.cah.spamBot.setTopic(channel, this.cah.topic + " | Bot currently offline.");
         String[] users = new String[this.cah.players.size()];
         for (int i = 0; i < this.cah.players.size(); i++) {
